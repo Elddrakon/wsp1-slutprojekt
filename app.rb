@@ -17,7 +17,11 @@ class App < Sinatra::Base
 
     # Routen /
     get '/' do
-        erb :index
+        redirect('/charities')
+    end
+
+    get '/charities' do
+        erb(:"charities/index")  
     end
 
 end
