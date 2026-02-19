@@ -27,7 +27,8 @@ class Seeder
     db.execute('CREATE TABLE users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT NOT NULL,
-                password INTEGER NOT NULL,
+                password_hash TEXT NOT NULL,
+                email TEXT NOT NULL,
                 rank INTEGER)')
   end
 

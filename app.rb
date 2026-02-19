@@ -21,7 +21,18 @@ class App < Sinatra::Base
     end
 
     get '/charities' do
-        erb(:"charities/index")  
+        erb(:"charities/index", layout: :"layoutloggedout")  
     end
 
+    get '/charities/login' do
+        erb(:"charities/login", layout: :"layoutloggedout")
+    end
+
+    post '/charities/login' do
+        todos = db.execute('SELECT * FROM users WHERE ')
+          
+    end
+    
+
+    #get '/user/charities'
 end
