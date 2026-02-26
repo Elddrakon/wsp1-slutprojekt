@@ -1,5 +1,7 @@
 require 'sqlite3'
 require_relative '../config'
+require 'bcrypt'
+
 class Seeder
 
   def self.seed!
@@ -27,7 +29,7 @@ class Seeder
     db.execute('CREATE TABLE users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT NOT NULL,
-                password_hash TEXT NOT NULL,
+                password TEXT NOT NULL,
                 email TEXT NOT NULL,
                 rank INTEGER)')
   end
@@ -41,6 +43,12 @@ class Seeder
       db.results_as_hash = true
       db
     end
+  end
+
+  def self.populate_tables
+    password_hashed = BCrypt::Password.create("123")
+    p "Storing hashed password (#{password_hashed}) to DB. Clear text password (123) never saved."
+    db.execute('INSERT INTO users (username, password) VALUES (?, ?)', ["something", password_hashed])
   end
 
 end

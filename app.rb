@@ -1,5 +1,6 @@
 require 'debug'
 require "awesome_print"
+require 'bcrypt'
 
 class App < Sinatra::Base
 
@@ -29,8 +30,38 @@ class App < Sinatra::Base
     end
 
     post '/charities/login' do
-        todos = db.execute('SELECT * FROM users WHERE ')
-          
+        @usernamelock = false
+        @passwordlock = false
+        newusername = params["username"]
+        newpassword_hashed = params["password"]
+        p newusername
+        user = db.execute("SELECT * FROM users WHERE username=?", newusername).first
+        
+        unless user
+            ap "/login : Invalid username."
+            status 401
+        end
+
+        p user
+        oldpassword_hashed = user["password"].to_s
+
+        bcrypt_db_password = BCrypt::Password.new(oldpassword_hashed)
+        p bcrypt_db_password
+
+        @logins = db.execute("SELECT * FROM users WHERE users=?", newusername)
+        if logins == true then
+            @usernamelock = true
+        end
+
+        if db.execute("SELECT * FROM users WHERE password_hash=?", bcrypt_db_password)
+            @passwordlock = true  
+        end
+        if @usernamelock || @passwordlock == false
+            ap "something bad"
+        else
+            ap "something good"
+            #redirect('/')
+        end
     end
     
 
