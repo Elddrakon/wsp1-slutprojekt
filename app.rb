@@ -25,13 +25,23 @@ class App < Sinatra::Base
         erb(:"charities/index", layout: :"layoutloggedout")  
     end
 
+
+
     get '/charities/login' do
         erb(:"charities/login", layout: :"layoutloggedout")
     end
 
+    get '/charities/singup' do
+        erb(:"charities/signup", layout: :"layoutloggedout")
+    end
+
+
+
+
     post '/charities/login' do
         @usernamelock = false
         @passwordlock = false
+        usernamemissing = false
         newusername = params["username"]
         newpassword_hashed = params["password"]
         p newusername
@@ -40,30 +50,59 @@ class App < Sinatra::Base
         unless user
             ap "/login : Invalid username."
             status 401
+            
+            usernamemissing = true
         end
+        if usernamemissing != true
+            p user
+            oldpassword_hashed = user["password"]
+            p newpassword_hashed
+            bcrypt_db_password = BCrypt::Password.new(newpassword_hashed)
+            p bcrypt_db_password
 
-        p user
-        oldpassword_hashed = user["password"].to_s
+            @logins = db.execute("SELECT * FROM users WHERE username=?", newusername)
+            if @logins == true then
+                @usernamelock = true
+            end
 
-        bcrypt_db_password = BCrypt::Password.new(oldpassword_hashed)
-        p bcrypt_db_password
-
-        @logins = db.execute("SELECT * FROM users WHERE users=?", newusername)
-        if logins == true then
-            @usernamelock = true
-        end
-
-        if db.execute("SELECT * FROM users WHERE password_hash=?", bcrypt_db_password)
-            @passwordlock = true  
-        end
-        if @usernamelock || @passwordlock == false
-            ap "something bad"
+            if db.execute("SELECT * FROM users WHERE password=?", bcrypt_db_password) && oldpassword_hashed == bcrypt_db_password
+                @passwordlock = true  
+            end
+            if @usernamelock || @passwordlock == false
+                ap "something bad"
+                erb(:"charities/signup", layout: :"layoutloggedout")
+            else
+                ap "something good"
+                redirect('/loggedincharities')
+            end        
         else
-            ap "something good"
-            #redirect('/')
+            erb(:"charities/signup", layout: :"layoutloggedout")
         end
+        
     end
     
+    post '/charities/signup' do
+        newusername = params["username"]
+        newpassword_hashed = params["password"] 
+        p newpassword_hashed
+        bcryptPassword = BCrypt::Password.new(newpassword_hashed)
+        newemail = params["email"]
+        p newusername
+        p newemail
+        if db.execute("SELECT * FROM users WHERE username=?", newusername)
+            db.execute('INSERT INTO users (username, password, email) VALUES (? ,? ,?)', [newusername, bcryptPassword, newemail])
+            redirect('/loggedincharities')
+        else
+            erb(:"charities/signup")
+            p "something went wrong!!!"
+        end
+    end
+
+
 
     #get '/user/charities'
+    get '/loggedincharities' do
+        erb(:"loggedincharities/index_lg", layout: :"layoutloggedin") 
+        ap "switched layout to logged_in version!"
+    end
 end

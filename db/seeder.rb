@@ -11,7 +11,7 @@ class Seeder
     puts "🧱 Creating tables..."
     create_tables
     #puts "🍎 Populating tables..."
-    #populate_tables
+    populate_tables
     puts "✅ Done seeding the database!"
   end
 
@@ -30,7 +30,7 @@ class Seeder
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT NOT NULL,
                 password TEXT NOT NULL,
-                email TEXT NOT NULL,
+                email TEXT,
                 rank INTEGER)')
   end
 
@@ -47,8 +47,9 @@ class Seeder
 
   def self.populate_tables
     password_hashed = BCrypt::Password.create("123")
+    username = "something"
     p "Storing hashed password (#{password_hashed}) to DB. Clear text password (123) never saved."
-    db.execute('INSERT INTO users (username, password) VALUES (?, ?)', ["something", password_hashed])
+    db.execute('INSERT INTO users (username, password) VALUES (? ,?)', [username, password_hashed])
   end
 
 end
