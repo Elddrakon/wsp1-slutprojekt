@@ -27,18 +27,18 @@ class App < Sinatra::Base
 
 
 
-    get '/charities/login' do
-        erb(:"charities/login", layout: :"layoutloggedout")
+    get '/users/login' do
+        erb(:"users/login", layout: :"layoutloggedout")
     end
 
-    get '/charities/singup' do
-        erb(:"charities/signup", layout: :"layoutloggedout")
+    get '/users/singup' do
+        erb(:"users/signup", layout: :"layoutloggedout")
     end
 
 
 
 
-    post '/charities/login' do
+    post '/users/login' do
         @usernamelock = false
         @passwordlock = false
         usernamemissing = false
@@ -76,12 +76,12 @@ class App < Sinatra::Base
                 redirect('/loggedincharities')
             end        
         else
-            erb(:"charities/signup", layout: :"layoutloggedout")
+            erb(:"users/signup", layout: :"layoutloggedout")
         end
         
     end
     
-    post '/charities/signup' do
+    post '/users/signup' do
         newusername = params["username"]
         newpassword_hashed = params["password"] 
         p newpassword_hashed
