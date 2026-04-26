@@ -1,4 +1,6 @@
+
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,19 +10,21 @@
 </head>
 <body>
   <h1>Webbserverprogrammering 1 - Slutprojekt</h1>
-  
+  <h2>
+    you are logged in as:
+  </h2>
 
   <hr>
     <nav>
       <ul>
-        <li><a href="/charities">Alla våra charaties</a></li>
+        <li><a href="/charities">Alla våra charities</a></li>
         <li><a href="/charities/new">New Charity</a></li>
         <li><a href="/users/login">Log In</a></li>
-        <li><a href="/users/login">Sign Up</a></li>
+        <li><a href="/users/signup">Sign Up</a></li>
       </ul>
     </nav>
 
-  <%= yield %>
+    <%= yield %>
 
   <hr>
 </body>

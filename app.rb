@@ -1,8 +1,17 @@
 require 'debug'
 require "awesome_print"
 require 'bcrypt'
+require 'sinatra/base'
+require_relative 'config.rb'
+require_relative 'Models/user.rb'
+require_relative 'Models/charities.rb'
 
 class App < Sinatra::Base
+    enable :sessions
+    use Rack::Session::Cookie, 
+        key: 'rack.session',
+        path: '/',
+        secret: "cf22c9d6061b3e067155e59d775d4406c92b6afc4aaff0a4131e9165eb2d492b597ace501a3df36043ecba99ae29474acac0cbd8c75fb5f46503b3e90d8b8159"
 
     setup_development_features(self)
 
@@ -16,93 +25,83 @@ class App < Sinatra::Base
       return @db
     end
 
+   
+
     # Routen /
     get '/' do
         redirect('/charities')
     end
 
     get '/charities' do
-        erb(:"charities/index", layout: :"layoutloggedout")  
+        @charities = Charity.index()
+        @users = User.all()
+        @account = @logged_user
+        erb(:"charities/index")
+        #Transport.send_erb(charities/index, layoutloggedout)  
+    end
+
+
+    get '/charities/new' do
+        erb(:"charities/new")
+
     end
 
 
 
     get '/users/login' do
-        erb(:"users/login", layout: :"layoutloggedout")
+        erb(:"users/login")
     end
 
-    get '/users/singup' do
-        erb(:"users/signup", layout: :"layoutloggedout")
+    get '/users/signup' do
+        p 123
+        erb(:"users/signup")
+    end
+
+    get '/users/logout' do
+        p "logged out"
+        sleep(1)  
+        erb(:"charities")
     end
 
 
 
 
+   
+    
+    
     post '/users/login' do
-        @usernamelock = false
-        @passwordlock = false
-        usernamemissing = false
-        newusername = params["username"]
-        newpassword_hashed = params["password"]
-        p newusername
-        user = db.execute("SELECT * FROM users WHERE username=?", newusername).first
-        
-        unless user
-            ap "/login : Invalid username."
-            status 401
-            
-            usernamemissing = true
-        end
-        if usernamemissing != true
-            p user
-            oldpassword_hashed = user["password"]
-            p newpassword_hashed
-            bcrypt_db_password = BCrypt::Password.new(newpassword_hashed)
-            p bcrypt_db_password
+        recievedusername = params["username"]
+        recievedpassword_hashed = params["password"]
 
-            @logins = db.execute("SELECT * FROM users WHERE username=?", newusername)
-            if @logins == true then
-                @usernamelock = true
-            end
+        if User.find_user_info(recievedusername) == true
+            @user = User.find_user_info(recievedusername)
+            oldpassword_hashed = @user
 
-            if db.execute("SELECT * FROM users WHERE password=?", bcrypt_db_password) && oldpassword_hashed == bcrypt_db_password
-                @passwordlock = true  
-            end
-            if @usernamelock || @passwordlock == false
-                ap "something bad"
-                erb(:"charities/signup", layout: :"layoutloggedout")
-            else
-                ap "something good"
-                redirect('/loggedincharities')
-            end        
-        else
-            erb(:"users/signup", layout: :"layoutloggedout")
         end
-        
     end
     
     post '/users/signup' do
-        newusername = params["username"]
-        newpassword_hashed = params["password"] 
-        p newpassword_hashed
-        bcryptPassword = BCrypt::Password.new(newpassword_hashed)
-        newemail = params["email"]
-        p newusername
-        p newemail
-        if db.execute("SELECT * FROM users WHERE username=?", newusername)
-            db.execute('INSERT INTO users (username, password, email) VALUES (? ,? ,?)', [newusername, bcryptPassword, newemail])
-            redirect('/loggedincharities')
+        recievedusername = params["username"]
+        recievedpassword_hashed = params["password"] 
+        p recievedpassword_hashed
+        bcryptPassword = BCrypt::Password.create(recievedpassword_hashed)
+        recievedemail = params["email"]
+        p recievedusername
+        p recievedemail
+        if not User.user_exists?(recievedusername)
+            User.add(recievedusername, bcryptPassword, recievedemail, 0)
+            @logged_user = User.find_user_info(recievedusername)
+            redirect('/charities')
         else
-            erb(:"charities/signup")
-            p "something went wrong!!!"
+            erb(:"users/signup")
+            p "something went wrong or username is already in use!!!"
+            sleep(1)
+            erb(:"users/signup")
         end
     end
 
 
 
     #get '/user/charities'
-    get '/loggedincharities' do
-        erb(:"loggedincharities/index_lg", layout: :"layoutloggedin") 
-        ap "switched layout to logged_in version!"
-    end
+    
 end

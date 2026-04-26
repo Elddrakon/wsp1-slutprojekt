@@ -1,6 +1,7 @@
 require 'fileutils'
 require 'sqlite3'
 
+
 ENV['RACK_ENV'] ||= 'development'
 
 DB_NAME   = 'sqlite.db'

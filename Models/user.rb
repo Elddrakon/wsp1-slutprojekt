@@ -1,52 +1,57 @@
-#Place where all of the shit happens!!!
-require 'debug'
-require "awesome_print"
-require 'bcrypt'
-setup_development_features(self)
+require_relative '../config.rb'
 
-  # Funktion för att prata med databasen
-  # Exempel på användning: db.execute('SELECT * FROM fruits')
-  def db
+
+
+class User
+    
+  attr_accessor :user_id
+
+  def initialize(params = {})
+        @user_id = params["user_id"]
+        @username = params["username"]
+        @password = params["password"]
+        @email = params["email"]
+        @rank = params["rank"]
+  end
+
+  def self.db
     return @db if @db
     @db = SQLite3::Database.new(DB_PATH)
     @db.results_as_hash = true
-
     return @db
   end
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-class User
+
+
+  def self.add(username, password, email, rank)
+    db.execute('INSERT INTO users (username, password, email, rank) VALUES (?, ?, ?, ?)', [username, password, email, rank])
+  end
+
+  def self.updaterank(username, email, rank)
+    db.execute('INSERT INTO users (username, email, rank) VALUES (?, ?, ?, ?)', [username, email, rank])
+  end
+
   def self.all()
     return db.execute("SELECT * FROM users")
   end
-  def self.compare(params, value)
+
+
+  def self.find_user_info(username)
+    return db.execute("SELECT * FROM users WHERE username=?", username).first
   end
-  def self.user_check(username)
-    usernamemissing = false
+
+
+  def self.user_exists?(username)
+    usernameexists = true
     user = db.execute("SELECT * FROM users WHERE username=?", username).first
+    p user
     unless user
-      usernamemissing = true
+      usernameexists = false
     end
-    return usernamemissing
-  end
-  def login(givenusername, givenpassword)
-    
-  end
-  def signup()
-        
+
+    return usernameexists
   end
 end
+
+
 
 

@@ -1,2 +1,22 @@
-<h2>Alla frukter i butiken</h2>
+<h2>Logged in as:</h2>
+
+<h2>Alla charities</h2>
+
+
+<% @charities.each do |charity| %>
+
+    <li>
+        <p>This charity id is: <%= charity['charity_id']%></p>
+        <p>This charity is owned by: <%= charity['username']%></p>
+        <p>This charity has the description of: <%=charity['information']%></p>
+        
+
+
+
+
+
+
+    </li>
+
+<% end %>
 
