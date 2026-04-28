@@ -1,5 +1,12 @@
-<h2>Logged in as:</h2>
-
+<h2>Logged in as: 
+    
+    <%if @account != nil %>
+        
+        <%=@account%></h2>
+    <%else%>
+        
+    <%end%>
+    
 <h2>Alla charities</h2>
 
 
@@ -8,6 +15,7 @@
     <li>
         <p>This charity id is: <%= charity['charity_id']%></p>
         <p>This charity is owned by: <%= charity['username']%></p>
+        <p>This charity has the target group of: <%=charity['target_group']%>
         <p>This charity has the description of: <%=charity['information']%></p>
         
 

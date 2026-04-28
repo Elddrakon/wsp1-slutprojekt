@@ -1,0 +1,29 @@
+<h2>Logged in as: 
+    
+    <%if @account != nil %>
+        
+        <%=@account%></h2>
+    <%else%>
+        
+    <%end%>
+
+<h2>All Users</h2>
+
+
+<% @users.each do |user| %>
+
+    <li>
+        <p>This user_id is: <%= user['user_id']%></p>
+        <p>This user goes by the username: <%= user['username']%></p>
+        <p>This user has the email of: <%=user['email']%>
+        <p>This user has the rank of: <%=user['rank']%></p>
+        
+
+
+
+
+
+
+    </li>
+
+<% end %>

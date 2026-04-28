@@ -15,6 +15,10 @@ class Charity
     return @db
   end
 
+  def self.add(new_username, new_charity_name, new_target_group, new_information)
+    db.execute('INSERT INTO charities(username, name, target_group, information) VALUES (?, ?, ?, ?)', [new_username, new_charity_name, new_target_group, new_information])
+  end
+
   def self.index()
     return db.execute('SELECT * FROM charities')
   end

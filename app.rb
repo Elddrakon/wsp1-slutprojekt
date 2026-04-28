@@ -4,7 +4,7 @@ require 'bcrypt'
 require 'sinatra/base'
 require_relative 'config.rb'
 require_relative 'Models/user.rb'
-require_relative 'Models/charities.rb'
+require_relative 'Models/charity.rb'
 
 class App < Sinatra::Base
     enable :sessions
@@ -35,32 +35,109 @@ class App < Sinatra::Base
     get '/charities' do
         @charities = Charity.index()
         @users = User.all()
-        @account = @logged_user
+        @account = ""
+        if session[:user_id] 
+            user_object = db.execute("SELECT * FROM users WHERE user_id=?", [session[:user_id]]).first 
+            user = User.new(user_object) if user_object
+            @account = user.username
+        end
+
+       
+        
+        p @account
         erb(:"charities/index")
         #Transport.send_erb(charities/index, layoutloggedout)  
     end
 
+    get '/charities/personalindex' do
+        redirect '/users/login' unless session[:user_id]
+        
+        @user = session[:user_id]
+        @charities = Charity.index_user(@user)
+        erb(:"charities/index")
+        #does not work yet!!!!
+    end
+
+
 
     get '/charities/new' do
+        redirect '/users/login' unless session[:user_id]
         erb(:"charities/new")
 
     end
 
+    post '/charities' do
+        new_charity_name = params["charity_name"]
+        new_target_group = params["group_name"]
+        new_information = params["charity_information"]
+        if session[:user_id] 
+            user_object = db.execute("SELECT * FROM users WHERE user_id=?", [session[:user_id]]).first 
+            user = User.new(user_object) if user_object
+            @account = user.username
+            Charity.add(@account, new_charity_name, new_target_group, new_information)
+            redirect('/charities')
+        else
+            redirect('/users/login')
+        end
+    end
+
+
+
+
+    #Admin Commands///
+    
+
+    get '/admin/users/index' do
+        
+        @users = User.all()
+        @account = ""
+        if session[:user_id] 
+            user_object = db.execute("SELECT * FROM users WHERE user_id=?", [session[:user_id]]).first 
+            user = User.new(user_object) if user_object
+            @account = user.username
+            if @account == "ADMIN"
+                p @account
+                erb(:"users/userindex")
+            else
+                redirect('/users/login')
+            end
+        else
+            redirect('/users/login')
+        end
+
+    end
+    
+    
+    
+    #Admin Commands end
 
 
     get '/users/login' do
-        erb(:"users/login")
+        if session[:user_id]
+            redirect(:"/charities")
+        else
+            erb(:"users/login")
+        end
     end
 
     get '/users/signup' do
-        p 123
-        erb(:"users/signup")
+        if session[:user_id]
+            redirect(:"/charities")  
+        else
+            erb(:"users/signup")
+        end
     end
 
     get '/users/logout' do
-        p "logged out"
-        sleep(1)  
-        erb(:"charities")
+        if session[:user_id]
+            p "logged out"
+            session.clear
+            sleep(1)  
+            redirect(:"/charities")
+        else
+            redirect(:"/users/login")
+        end
+        
     end
 
 
@@ -71,13 +148,25 @@ class App < Sinatra::Base
     
     post '/users/login' do
         recievedusername = params["username"]
-        recievedpassword_hashed = params["password"]
-
-        if User.find_user_info(recievedusername) == true
-            @user = User.find_user_info(recievedusername)
-            oldpassword_hashed = @user
-
+        recievedpassword = params["password"] 
+        p recievedpassword
+        
+        p recievedusername
+       
+        if User.user_exists?(recievedusername)
+            user = User.find_user_info(recievedusername)
+            if user && BCrypt::Password.new(user.password) == recievedpassword
+                session[:user_id] = user.user_id
+            else
+                p "username is either super duper wrong or the password is duper snuper wrong!!!"
+                redirect('/users/login')
+            end
+        
+            redirect('/charities')
+        else
+            redirect('/users/login')
         end
+        
     end
     
     post '/users/signup' do
@@ -91,6 +180,9 @@ class App < Sinatra::Base
         if not User.user_exists?(recievedusername)
             User.add(recievedusername, bcryptPassword, recievedemail, 0)
             @logged_user = User.find_user_info(recievedusername)
+            p "logged user:"
+            p @logged_user.username
+            session[:user_id] = @logged_user.user_id
             redirect('/charities')
         else
             erb(:"users/signup")

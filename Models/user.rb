@@ -5,6 +5,10 @@ require_relative '../config.rb'
 class User
     
   attr_accessor :user_id
+  attr_accessor :username
+  attr_accessor :password
+
+
 
   def initialize(params = {})
         @user_id = params["user_id"]
@@ -13,6 +17,10 @@ class User
         @email = params["email"]
         @rank = params["rank"]
   end
+
+
+
+  
 
   def self.db
     return @db if @db
@@ -36,7 +44,8 @@ class User
 
 
   def self.find_user_info(username)
-    return db.execute("SELECT * FROM users WHERE username=?", username).first
+    user_object = db.execute("SELECT * FROM users WHERE username=?", username).first
+    return user_object ? new(user_object) : nil
   end
 
 

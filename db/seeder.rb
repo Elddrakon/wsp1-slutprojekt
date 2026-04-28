@@ -58,8 +58,14 @@ class Seeder
     #example 1:
     db.execute('INSERT INTO users (username, password, email, rank) VALUES (? ,?, ?, ?)', [username, password_hashed, email, rank])
     #example 2:
-    password_hashed_erik = BCrypt::Password.create("1234")
+    password_hashed_erik = BCrypt::Password.create("12345")
     db.execute('INSERT INTO users (username, password, email, rank) VALUES (?, ?, ?, ?)', ["Erik", password_hashed_erik, "erik09.clarke@gmail.com", 0 ])
+
+    #Admin in users database: Start
+    
+    password_hashed_ADMIN = BCrypt::Password.create("6767")
+    db.execute('INSERT INTO users (username, password, rank) VALUES (?, ?, ?)', ["ADMIN", password_hashed_ADMIN, 100])
+
     #Users database populate: End
     
     #Charitys database populate: Start
