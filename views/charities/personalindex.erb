@@ -10,11 +10,17 @@
 <h2>Alla charities</h2>
 
 
-<% @charities.each do |charity| %>
+<% @personalcharities.each do |charity| %>
 
     <li>
         <p>This charity is namned: <%= charity['name']%></p>
         <p>This charity id is: <%= charity['charity_id']%></p>
+        <form action="/charities/<%=charity['charity_id']%>/destroy" method="post">
+            <input type="submit" value="Delete">
+        </form>
+        <form action="/charities/<%=charity['charity_id']%>/edit" method="get">
+            <input type="submit" value="Edit">
+        </form>
         <p>This charity is owned by: <%= charity['username']%></p>
         <p>This charity has the target group of: <%=charity['target_group']%>
         <p>This charity has the description of: <%=charity['information']%></p>
@@ -28,4 +34,3 @@
     </li>
 
 <% end %>
-

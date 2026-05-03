@@ -42,8 +42,6 @@ class App < Sinatra::Base
             @account = user.username
         end
 
-       
-        
         p @account
         erb(:"charities/index")
         #Transport.send_erb(charities/index, layoutloggedout)  
@@ -51,12 +49,36 @@ class App < Sinatra::Base
 
     get '/charities/personalindex' do
         redirect '/users/login' unless session[:user_id]
+         
+        user_object = db.execute("SELECT * FROM users WHERE user_id=?", [session[:user_id]]).first 
+        user = User.new(user_object) if user_object
         
-        @user = session[:user_id]
-        @charities = Charity.index_user(@user)
-        erb(:"charities/index")
+        @personalcharities = Charity.index_user(user.user_id)
+        p @personalcharities
+        erb(:"charities/personalindex")
         #does not work yet!!!!
     end
+
+
+    post '/charities/:id/destroy' do | id |
+        Charity.destroy(id)
+        redirect('/charities/personalindex')
+    end
+
+    get '/charities/:id/edit' do | id |
+        @charity = Charity.find_charity(id)
+        erb(:"charities/edit")
+    end
+
+    post '/charities/:id/update' do | id |
+        new_charity_name = params["charity_name"]
+        new_group_target = params["group_name"]
+        new_information = params["charity_information"]
+        Charity.update_charity(new_charity_name, new_group_target, new_information, id)
+        redirect('/charities/personalindex')
+
+    end
+
 
 
 

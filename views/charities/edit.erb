@@ -1,0 +1,10 @@
+<h2>Edit Charity!!!</h2>
+
+
+
+<form action="/charities/<%=@charity["charity_id"]%>/update" method="post">
+    <label>Name <input type="text" name="charity_name" value="<%=@charity["name"]%>"></label>
+    <label>Target group <input type="text" name="group_name" value="<%=@charity["target_group"]%>"></label>
+    <label>Information <input type="text" name="charity_information" value="<%=@charity["information"]%>"></label>
+    <input type="submit" value="Spara">
+</form>

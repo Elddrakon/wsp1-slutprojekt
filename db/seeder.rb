@@ -71,10 +71,13 @@ class Seeder
     #Charitys database populate: Start
     charity_username = "Erik"
     name = "Charity against cancer"
-    target_group = "Childreen"
-    information = "A charity that raises money to fight for childreen with cancer!!!"
-    #example 1: 
-    db.execute('INSERT INTO charities (username, name, target_group, information) VALUES (?, ?, ?, ?)', [charity_username, name, target_group, information])
+    target_group = "Children"
+    information = "A charity that raises money to fight for children with cancer!!!"
+
+    user = db.get_first_row('SELECT user_id FROM users WHERE username = ?', [charity_username])
+    user_id = user['user_id']
+
+    db.execute('INSERT INTO charities (username, name, target_group, information, user_id) VALUES (?, ?, ?, ?, ?)', [charity_username, name, target_group, information, user_id])
     #Charitys database populate: End
   end
 
