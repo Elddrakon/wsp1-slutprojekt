@@ -1,0 +1,27 @@
+<h1>User Donations</h1>
+
+<h2>Logged in as: 
+    
+<%if @account.username != nil %>
+        
+    <%=@account.username%></h2>
+<%else%>
+        
+<%end%>
+
+<h2>All Donations:</h2>
+
+
+<% @donations.each do |donation|%>
+    <% user = @users.find { |u| u["user_id"] == donation["user_id"] } %> 
+    <li>
+        <p>This donation_id is: <%= donation['donation_id']%></p>
+        <p>This user goes by the username: <%= user['username']%></p>
+        <p>This donation consisted of: <%= donation['donation_amount']%>
+        <p>This user has the email of: <%=user['email']%>
+        <p>This user has the rank of: <%=user['rank']%></p>
+
+    </li>
+
+<% end %>
+

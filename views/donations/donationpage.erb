@@ -1,0 +1,11 @@
+<h1>Donate Page</h1>
+
+<h2>Currently donating to the: <%=@charity["name"]%> charity!!!</h2>
+
+
+<form action="/donations/<%=@charity['charity_id']%>/donationpage" method="post">
+    <label>Username: <input type="text" name="username"></label>
+    <label>Password: <input type="text" name="password"></label>
+    <label>Donation Amount: <input type="text" name="donation_amount"></label>
+    <input type="submit" value="Donation">
+</form>

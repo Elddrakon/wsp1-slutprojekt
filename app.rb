@@ -5,6 +5,7 @@ require 'sinatra/base'
 require_relative 'config.rb'
 require_relative 'Models/user.rb'
 require_relative 'Models/charity.rb'
+require_relative 'Models/donate.rb'
 
 class App < Sinatra::Base
     enable :sessions
@@ -79,6 +80,17 @@ class App < Sinatra::Base
 
     end
 
+    get '/charities/:id/show' do | id |
+    
+        @charity = Charity.find_charity(id)
+        @account = ""
+        if session[:user_id] 
+           
+            @account = User.find_user_info_usingUser_id(session[:user_id])
+        end
+        erb(:"charities/show")
+    end
+
 
 
 
@@ -128,10 +140,32 @@ class App < Sinatra::Base
         end
 
     end
+
+
+    get '/admin/donations/donationindex' do
+        @donations = Donate.all()
+        @users = User.all()
+        @account = ""
+        redirect '/users/login' unless session[:user_id]
+
+        
+        @account = User.find_user_info_usingUser_id(session[:user_id])
+        if @account.username == "ADMIN"
+            p @account
+            erb(:'donations/donationindex')
+        else
+            redirect('/users/login')
+        end
+        
+            
+        
+    end
     
     
     
     #Admin Commands end
+
+    #User oriented routes Start!///////////////////////
 
 
     get '/users/login' do
@@ -163,17 +197,10 @@ class App < Sinatra::Base
     end
 
 
-
-
-   
-    
     
     post '/users/login' do
         recievedusername = params["username"]
         recievedpassword = params["password"] 
-        p recievedpassword
-        
-        p recievedusername
        
         if User.user_exists?(recievedusername)
             user = User.find_user_info(recievedusername)
@@ -214,8 +241,32 @@ class App < Sinatra::Base
         end
     end
 
+    get '/users/profile' do
+        redirect '/users/login' unless session[:user_id]
+         
+       
+        @account = User.find_user_info_usingUser_id(session[:user_id])
+        erb(:"users/profile")
+
+    end
+
+    #User oriented routes End!!!///////////////////////
 
 
-    #get '/user/charities'
+    #Donate oriented routes Start!!!////////////////
+    
+
+
+    get '/donations/:id/donationpage' do | id |
+        redirect '/users/login' unless session[:user_id]
+        @charity = Charity.find_charity(id)
+        erb(:"donations/donationpage")
+    end
+
+    post '/donations/:id/donationpage' do | id |
+        p "Successfully sent user to the donation page!!"
+        # work in progress!!!!
+    end
+    
     
 end

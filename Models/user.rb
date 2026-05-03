@@ -42,8 +42,10 @@ class User
     return db.execute("SELECT * FROM users")
   end
 
-  def self.find_user_info_usingID(user_id)
-    return 
+  def self.find_user_info_usingUser_id(user_id)
+    user_object = db.execute("SELECT * FROM users WHERE user_id=?", [user_id]).first 
+    user = User.new(user_object) if user_object
+    return user
   end
 
 

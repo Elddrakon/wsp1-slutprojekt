@@ -2,7 +2,7 @@
     
     <%if @account != nil %>
         
-        <%=@account%></h2>
+        <a href="/users/profile"><%=@account%></a></h2>
     <%else%>
         
     <%end%>
@@ -13,11 +13,14 @@
 <% @charities.each do |charity| %>
 
     <li>
-        <p>This charity is namned: <%= charity['name']%></p>
+        <p>This charity is namned: <a href="/charities/<%=charity['charity_id']%>/show"><%= charity['name']%></p></a>
         <p>This charity id is: <%= charity['charity_id']%></p>
         <p>This charity is owned by: <%= charity['username']%></p>
         <p>This charity has the target group of: <%=charity['target_group']%>
         <p>This charity has the description of: <%=charity['information']%></p>
+        <form action="/donations/<%=charity["charity_id"]%>/donationpage" method="get">
+            <input type="submit" value="Donate">
+        </form>
         
 
 
