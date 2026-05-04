@@ -270,20 +270,29 @@ class App < Sinatra::Base
         recievedpassword_hashed = params["password"]
         recievedusername = params["username"]
         donation_amount = params["donation_amount"]
-        bcryptPassword = User.encrypt_password(recievedpassword_hashed)
-        if user.username == recievedusername && user.password == bcryptPassword
+        if user.username == recievedusername && BCrypt::Password.new(user.password) == recievedpassword_hashed
+            
+            p user.password
             Donate.donate(donation_amount, id, user.user_id)
             p "donation successful"
             redirect('/charities')
         else
+            p user.password
             p "donation failed"
-            redirect('/donations/donationpage')
+            redirect('/errors/donationerror')
         end
-
-        
-        
-
     end
+
+
+    #Donate oriented routes END!!!////////////////
     
+
+
+    #Error oriented routes Start!!!////////////////
     
+
+
+    get '/errors/donationerror' do
+        erb(:"errors/error1")
+    end
 end

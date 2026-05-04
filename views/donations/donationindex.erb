@@ -13,9 +13,12 @@
 
 
 <% @donations.each do |donation|%>
-    <% user = @users.find { |u| u["user_id"] == donation["user_id"] } %> 
+    <% user = @users.find { |u| u["user_id"] == donation["user_id"] } %>
+   
+    
     <li>
         <p>This donation_id is: <%= donation['donation_id']%></p>
+        <p>This donation was sent to a charity with the id: <%= donation['donated_charity']%></p>
         <p>This user goes by the username: <%= user['username']%></p>
         <p>This donation consisted of: <%= donation['donation_amount']%>
         <p>This user has the email of: <%=user['email']%>
