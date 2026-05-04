@@ -264,8 +264,25 @@ class App < Sinatra::Base
     end
 
     post '/donations/:id/donationpage' do | id |
+        redirect '/users/login' unless session[:user_id]
+        user = User.find_user_info_usingUser_id(session[:user_id])
         p "Successfully sent user to the donation page!!"
-        # work in progress!!!!
+        recievedpassword_hashed = params["password"]
+        recievedusername = params["username"]
+        donation_amount = params["donation_amount"]
+        bcryptPassword = User.encrypt_password(recievedpassword_hashed)
+        if user.username == recievedusername && user.password == bcryptPassword
+            Donate.donate(donation_amount, id, user.user_id)
+            p "donation successful"
+            redirect('/charities')
+        else
+            p "donation failed"
+            redirect('/donations/donationpage')
+        end
+
+        
+        
+
     end
     
     

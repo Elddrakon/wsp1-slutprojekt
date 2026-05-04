@@ -20,4 +20,8 @@ class Donate
     return db.execute('SELECT * FROM donations WHERE user_id=?', user_id)
   end
 
+  def self.donate(donated_amount, donated_charity, user_id)
+    db.execute('INSERT INTO donations(donation_amount, donated_charity, user_id) VALUES (?, ?, ?)', [donated_amount, donated_charity, user_id])
+  end
+
 end

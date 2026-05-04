@@ -39,7 +39,7 @@ class Seeder
     db.execute('CREATE TABLE donations (
                 donation_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 donation_amount INTEGER,
-                donated_charity TEXT,
+                donated_charity INTEGER,
                 user_id INTEGER,
                 FOREIGN KEY (user_id) REFERENCES users(user_id))')
   end

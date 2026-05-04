@@ -48,6 +48,10 @@ class User
     return user
   end
 
+  def self.encrypt_password(password)
+    return BCrypt::Password.create(password)
+  end
+
 
   def self.find_user_info(username)
     user_object = db.execute("SELECT * FROM users WHERE username=?", username).first
