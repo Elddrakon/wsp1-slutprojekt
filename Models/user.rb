@@ -7,6 +7,8 @@ class User
   attr_accessor :user_id
   attr_accessor :username
   attr_accessor :password
+  attr_accessor :email
+  attr_accessor :rank
 
 
 
@@ -20,6 +22,8 @@ class User
 
 
 
+
+  
   
 
   def self.db
@@ -29,6 +33,35 @@ class User
     return @db
   end
 
+
+
+  def self.add_rank(donation_amount, user_id)
+    old_rank = db.execute('SELECT rank FROM users WHERE user_id=?', [user_id])
+
+    rankvalue = old_rank[0]["rank"]
+    new_rank_value = rankvalue + donation_amount.to_i
+    db.execute('UPDATE users SET rank=? WHERE user_id=?', [new_rank_value, user_id])
+  end
+
+
+  def self.get_rank(user_rank_value)
+    
+    if user_rank_value >= 1_000_000
+      rank = "Elite"
+    elsif user_rank_value >= 250_000
+      rank = "Diamond"
+    elsif user_rank_value >= 10_0000
+      rank = "Gold"
+    elsif user_rank_value >= 1_000
+      rank = "Silver"
+    elsif user_rank_value >= 100
+      rank = "Bronze"
+    else
+      rank = "Broke ahhhh boy"
+    end
+    return rank
+
+  end
 
   def self.add(username, password, email, rank)
     db.execute('INSERT INTO users (username, password, email, rank) VALUES (?, ?, ?, ?)', [username, password, email, rank])

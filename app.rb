@@ -26,6 +26,8 @@ class App < Sinatra::Base
       return @db
     end
 
+
+
    
 
     # Routen /
@@ -167,7 +169,7 @@ class App < Sinatra::Base
 
     #User oriented routes Start!///////////////////////
 
-
+    #Sends the user to the login page!
     get '/users/login' do
         if session[:user_id]
             redirect(:"/charities")
@@ -176,6 +178,7 @@ class App < Sinatra::Base
         end
     end
 
+    #Sends the user to the signup page!
     get '/users/signup' do
         if session[:user_id]
             redirect(:"/charities")  
@@ -184,6 +187,7 @@ class App < Sinatra::Base
         end
     end
 
+    #Logs out the user!
     get '/users/logout' do
         if session[:user_id]
             p "logged out"
@@ -197,7 +201,7 @@ class App < Sinatra::Base
     end
 
 
-    
+    #Code that runs whenever a user logs in!
     post '/users/login' do
         recievedusername = params["username"]
         recievedpassword = params["password"] 
@@ -218,6 +222,7 @@ class App < Sinatra::Base
         
     end
     
+    #Code that runs whenever a user signsup!
     post '/users/signup' do
         recievedusername = params["username"]
         recievedpassword_hashed = params["password"] 
@@ -241,11 +246,13 @@ class App < Sinatra::Base
         end
     end
 
+    #Sends the user to the profile page!
     get '/users/profile' do
         redirect '/users/login' unless session[:user_id]
          
        
         @account = User.find_user_info_usingUser_id(session[:user_id])
+        @rank_name = User.get_rank(@account.rank)
         erb(:"users/profile")
 
     end
@@ -271,9 +278,8 @@ class App < Sinatra::Base
         recievedusername = params["username"]
         donation_amount = params["donation_amount"]
         if user.username == recievedusername && BCrypt::Password.new(user.password) == recievedpassword_hashed
-            
-            p user.password
             Donate.donate(donation_amount, id, user.user_id)
+            User.add_rank(donation_amount, user.user_id)
             p "donation successful"
             redirect('/charities')
         else
