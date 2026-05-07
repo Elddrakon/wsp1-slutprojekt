@@ -2,11 +2,6 @@ require 'debug'
 require "awesome_print"
 require 'bcrypt'
 
-
-# Here are all the functions connected directly to the charities:
-# 
-#
-#
 class Charity
   def self.db
     return @db if @db

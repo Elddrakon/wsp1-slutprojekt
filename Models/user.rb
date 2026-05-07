@@ -1,7 +1,5 @@
 require_relative '../config.rb'
 
-
-
 class User
     
   attr_accessor :user_id
@@ -10,8 +8,6 @@ class User
   attr_accessor :email
   attr_accessor :rank
 
-
-
   def initialize(params = {})
         @user_id = params["user_id"]
         @username = params["username"]
@@ -19,21 +15,13 @@ class User
         @email = params["email"]
         @rank = params["rank"]
   end
-
-
-
-
   
-  
-
   def self.db
     return @db if @db
     @db = SQLite3::Database.new(DB_PATH)
     @db.results_as_hash = true
     return @db
   end
-
-
 
   def self.add_rank(donation_amount, user_id)
     old_rank = db.execute('SELECT rank FROM users WHERE user_id=?', [user_id])
@@ -42,7 +30,6 @@ class User
     new_rank_value = rankvalue + donation_amount.to_i
     db.execute('UPDATE users SET rank=? WHERE user_id=?', [new_rank_value, user_id])
   end
-
 
   def self.get_rank(user_rank_value)
     
@@ -95,7 +82,6 @@ class User
   def self.user_exists?(username)
     usernameexists = true
     user = db.execute("SELECT * FROM users WHERE username=?", username).first
-    p user
     unless user
       usernameexists = false
     end

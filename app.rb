@@ -16,8 +16,6 @@ class App < Sinatra::Base
 
     setup_development_features(self)
 
-    # Funktion för att prata med databasen
-    # Exempel på användning: db.execute('SELECT * FROM fruits')
     def db
       return @db if @db
       @db = SQLite3::Database.new(DB_PATH)
@@ -26,11 +24,6 @@ class App < Sinatra::Base
       return @db
     end
 
-
-
-   
-
-    # Routen /
     get '/' do
         redirect('/charities')
     end
@@ -45,7 +38,6 @@ class App < Sinatra::Base
             @account = user.username
         end
 
-        p @account
         erb(:"charities/index")
         #Transport.send_erb(charities/index, layoutloggedout)  
     end
@@ -55,13 +47,12 @@ class App < Sinatra::Base
          
         user_object = db.execute("SELECT * FROM users WHERE user_id=?", [session[:user_id]]).first 
         user = User.new(user_object) if user_object
-        
+        @account = user
         @personalcharities = Charity.index_user(user.user_id)
         p @personalcharities
         erb(:"charities/personalindex")
         #does not work yet!!!!
     end
-
 
     post '/charities/:id/destroy' do | id |
         Charity.destroy(id)
@@ -93,9 +84,6 @@ class App < Sinatra::Base
         erb(:"charities/show")
     end
 
-
-
-
     get '/charities/new' do
         redirect '/users/login' unless session[:user_id]
         erb(:"charities/new")
@@ -117,14 +105,9 @@ class App < Sinatra::Base
         end
     end
 
-
-
-
     #Admin Commands///
-    
 
     get '/admin/users/index' do
-        
         @users = User.all()
         @account = ""
         if session[:user_id] 
@@ -132,7 +115,6 @@ class App < Sinatra::Base
             user = User.new(user_object) if user_object
             @account = user.username
             if @account == "ADMIN"
-                p @account
                 erb(:"users/userindex")
             else
                 redirect('/users/login')
@@ -140,30 +122,20 @@ class App < Sinatra::Base
         else
             redirect('/users/login')
         end
-
     end
-
 
     get '/admin/donations/donationindex' do
         @donations = Donate.all()
         @users = User.all()
         @account = ""
         redirect '/users/login' unless session[:user_id]
-
-        
         @account = User.find_user_info_usingUser_id(session[:user_id])
         if @account.username == "ADMIN"
-            p @account
             erb(:'donations/donationindex')
         else
             redirect('/users/login')
-        end
-        
-            
-        
+        end  
     end
-    
-    
     
     #Admin Commands end
 
@@ -197,9 +169,7 @@ class App < Sinatra::Base
         else
             redirect(:"/users/login")
         end
-        
     end
-
 
     #Code that runs whenever a user logs in!
     post '/users/login' do
@@ -219,18 +189,14 @@ class App < Sinatra::Base
         else
             redirect('/users/login')
         end
-        
     end
     
     #Code that runs whenever a user signsup!
     post '/users/signup' do
         recievedusername = params["username"]
         recievedpassword_hashed = params["password"] 
-        p recievedpassword_hashed
         bcryptPassword = BCrypt::Password.create(recievedpassword_hashed)
         recievedemail = params["email"]
-        p recievedusername
-        p recievedemail
         if not User.user_exists?(recievedusername)
             User.add(recievedusername, bcryptPassword, recievedemail, 0)
             @logged_user = User.find_user_info(recievedusername)
@@ -250,19 +216,14 @@ class App < Sinatra::Base
     get '/users/profile' do
         redirect '/users/login' unless session[:user_id]
          
-       
         @account = User.find_user_info_usingUser_id(session[:user_id])
         @rank_name = User.get_rank(@account.rank)
         erb(:"users/profile")
-
     end
 
     #User oriented routes End!!!///////////////////////
 
-
     #Donate oriented routes Start!!!////////////////
-    
-
 
     get '/donations/:id/donationpage' do | id |
         redirect '/users/login' unless session[:user_id]
@@ -283,20 +244,14 @@ class App < Sinatra::Base
             p "donation successful"
             redirect('/charities')
         else
-            p user.password
             p "donation failed"
             redirect('/errors/donationerror')
         end
     end
 
-
     #Donate oriented routes END!!!////////////////
-    
-
 
     #Error oriented routes Start!!!////////////////
-    
-
 
     get '/errors/donationerror' do
         erb(:"errors/error1")
