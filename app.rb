@@ -39,7 +39,6 @@ class App < Sinatra::Base
         end
 
         erb(:"charities/index")
-        #Transport.send_erb(charities/index, layoutloggedout)  
     end
 
     get '/charities/personalindex' do
@@ -51,7 +50,6 @@ class App < Sinatra::Base
         @personalcharities = Charity.index_user(user.user_id)
         p @personalcharities
         erb(:"charities/personalindex")
-        #does not work yet!!!!
     end
 
     post '/charities/:id/destroy' do | id |
